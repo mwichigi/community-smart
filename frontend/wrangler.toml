@@ -1,0 +1,3 @@
+
+[vars]
+VITE_API_URL = "https://community-smart-backend.ngangamj828.workers.dev"
