@@ -18,9 +18,10 @@
     "react-scripts": "5.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build"
-  },
+  "dev": "vite",
+  "build": "vite build --mode production",
+  "preview": "vite preview"
+},
   "browserslist": {
     "production": [
       ">0.2%",
