@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import './assets/styles/global.css';
@@ -15,6 +15,12 @@ import AIAssistant from './components/ai-assistant/AIAssistant';
 import Messages from './components/common/Messages';
 
 function NotFound() {
+  // Wake up Render backend on page load
+  useEffect(() => {
+    fetch('https://community-smart-backend.onrender.com/health')
+      .catch(() => {});
+  }, []);
+
   return (
     <div style={{ paddingTop: 64, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, background: 'var(--off-white)' }}>
       <div style={{ fontSize: 72 }}>🌾</div>
@@ -26,6 +32,12 @@ function NotFound() {
 }
 
 export default function App() {
+  // Wake up Render backend on page load
+  useEffect(() => {
+    fetch('https://community-smart-backend.onrender.com/health')
+      .catch(() => {});
+  }, []);
+
   return (
     <AppProvider>
       <BrowserRouter>
