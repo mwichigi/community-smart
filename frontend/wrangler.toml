@@ -1,2 +1,2 @@
 [vars]
-REACT_APP_API_URL = "https://community-smart-backend.onrender.com/api"
+VITE_API_URL = "https://community-smart-backend.onrender.com/api"
