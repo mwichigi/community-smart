@@ -18,10 +18,10 @@
     "react-scripts": "5.0.1"
   },
   "scripts": {
-  "dev": "vite",
-  "build": "vite build --mode production",
-  "preview": "vite preview"
-},
+    "dev": "vite",
+    "build": "vite build --mode production",
+    "preview": "vite preview"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -31,5 +31,8 @@
     "development": [
       "last 1 chrome version"
     ]
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.2"
   }
 }
