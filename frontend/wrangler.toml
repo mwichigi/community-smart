@@ -1,2 +1,8 @@
+name = "community-smart"
+compatibility_date = "2026-06-09"
+
+[assets]
+directory = "./dist"
+
 [vars]
 VITE_API_URL = "https://community-smart-backend.onrender.com/api"
