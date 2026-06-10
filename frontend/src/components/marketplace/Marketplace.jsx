@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { listingsAPI } from '../../utils/api';
-import { formatPrice, formatDate, CATEGORIES, truncate } from '../../utils/helpers';
+import { formatPrice, formatDate, CATEGORIES, SUBCATEGORY_ICONS, truncate } from '../../utils/helpers';
 import { Card, Badge, Spinner, EmptyState, Button } from '../common/UI';
 import { MapView } from '../common/MapComponents';
 
@@ -25,7 +25,7 @@ function ListingCard({ item }) {
           />
         ) : (
           <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 56, background: 'var(--green-pale)' }}>
-            {CATEGORIES[item.category]?.icon || '📦'}
+            {SUBCATEGORY_ICONS[item.subcategory] || CATEGORIES[item.category]?.icon || '📦'}
           </div>
         )}
         <div style={{ position: 'absolute', top: 10, left: 10 }}>

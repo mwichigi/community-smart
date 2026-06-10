@@ -51,6 +51,43 @@ export const CATEGORIES = {
   },
 };
 
+export const SUBCATEGORY_ICONS = {
+  // Farm Produce
+  'Maize': '🌽',
+  'Beans': '🫘',
+  'Irish Potato (Waru)': '🥔',
+  'Peas (Minji)': '🟢',
+  'Vegetables': '🥬',
+  'Eggs': '🥚',
+  'Milk': '🥛',
+  'Meat': '🥩',
+  'Poultry (Live)': '🐔',
+  'Other Produce': '🌾',
+  // Agrovet
+  'Fertilizers': '🧪',
+  'Pesticides': '💊',
+  'Herbicides': '🧴',
+  'Animal Feeds': '🌾',
+  'Veterinary Medicine': '💉',
+  'Seeds': '🌱',
+  'Farm Tools': '🛠️',
+  'Other Supplies': '🌿',
+  // Services
+  'Veterinary': '🐄',
+  'Agrovet': '🌿',
+  'Tractor Hire': '🚜',
+  'Transport': '🚛',
+  'Labour': '👷',
+  'Other Services': '🔧',
+  // Housing
+  'Single Room': '🏠',
+  'Bedsitter': '🛏️',
+  '1 Bedroom': '🏡',
+  '2 Bedrooms': '🏘️',
+  '3+ Bedrooms': '🏗️',
+  'Shop/Commercial': '🏪',
+};
+
 export const UNIT_OPTIONS = ['Trays', 'Litres', 'Kgs', 'Bags (90kg)', 'Bags (50kg)', 'Bundles', 'Pieces', 'Crates', 'Tonnes', 'Per Month (Rent)', 'Per Service'];
 
 export const MAWINGU_CENTER = { lat: -0.5, lng: 36.5 }; // Nyandarua County approximate
