@@ -43,6 +43,16 @@ export default function Messages() {
       .catch(() => setMessages(DEMO_MESSAGES));
   }, [activeConv]);
 
+  // Poll for new messages every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      messagesAPI.getMessages(activeConv.other_user.id)
+        .then(res => setMessages(res.messages || res))
+        .catch(() => {});
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [activeConv]);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
