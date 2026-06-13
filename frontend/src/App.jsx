@@ -13,6 +13,7 @@ import Housing from './components/housing/Housing';
 import Services from './components/services/Services';
 import AIAssistant from './components/ai-assistant/AIAssistant';
 import Messages from './components/common/Messages';
+import ListingDetail from './pages/ListingDetail';
 
 function NotFound() {
   // Wake up Render backend on page load
@@ -47,7 +48,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/marketplace" element={<Marketplace />} />
-          <Route path="/marketplace/:id" element={<Marketplace />} />
+          <Route path="/marketplace/:id" element={<ListingDetail />} />
           <Route path="/post-listing" element={<PostListing />} />
           <Route path="/post-housing" element={<PostListing />} />
           <Route path="/post-service" element={<PostListing />} />
