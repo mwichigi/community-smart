@@ -1,6 +1,5 @@
 name = "community-smart"
 compatibility_date = "2026-06-09"
-main = "worker.js"
 
 [assets]
 directory = "./dist"
