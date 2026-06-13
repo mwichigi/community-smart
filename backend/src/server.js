@@ -9,7 +9,7 @@ const path = require('path');
 const { errorHandler, notFound } = require('./middleware/errorHandler');
 const {
   authRouter, listingsRouter, housingRouter,
-  servicesRouter, messagesRouter, aiRouter, uploadRouter,
+  servicesRouter, messagesRouter, aiRouter, uploadRouter, adminRouter,
 } = require('./routes/index');
 
 const app = express();
@@ -101,6 +101,7 @@ app.use('/api/services', servicesRouter);
 app.use('/api/messages', messagesRouter);
 app.use('/api/ai',       aiRouter);
 app.use('/api/upload',   uploadRouter);
+app.use('/api/admin',    adminRouter);
 
 // ── Error Handling ────────────────────────────────────────────────────────────
 app.use(notFound);

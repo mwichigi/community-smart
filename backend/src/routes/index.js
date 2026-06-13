@@ -73,6 +73,18 @@ messagesRouter.get('/:userId', protect, messagesController.getMessages);
 messagesRouter.post('/', protect, messagesController.sendMessage);
 messagesRouter.put('/:id/read', protect, messagesController.markRead);
 
+// ── ADMIN ROUTES ─────────────────────────────────────────────────────────────
+const adminRouter = express.Router();
+const adminController = require('../controllers/adminController');
+adminRouter.use(protect, adminController.requireAdmin);
+adminRouter.get('/stats', adminController.getStats);
+adminRouter.get('/users', adminController.getUsers);
+adminRouter.get('/listings', adminController.getListings);
+adminRouter.delete('/listings/:id', adminController.deleteListing);
+adminRouter.put('/listings/:id/toggle', adminController.toggleListing);
+adminRouter.put('/users/:id/toggle', adminController.toggleUser);
+adminRouter.delete('/users/:id', adminController.deleteUser);
+
 // ── AI ROUTES ─────────────────────────────────────────────────────────────────
 const aiRouter = express.Router();
 const aiController = require('../controllers/aiController');
@@ -86,4 +98,4 @@ const uploadController = require('../controllers/uploadController');
 
 uploadRouter.post('/image', protect, upload.single('image'), uploadController.uploadImage);
 
-module.exports = { authRouter, listingsRouter, housingRouter, servicesRouter, messagesRouter, aiRouter, uploadRouter };
+module.exports = { authRouter, listingsRouter, housingRouter, servicesRouter, messagesRouter, aiRouter, uploadRouter, adminRouter };
