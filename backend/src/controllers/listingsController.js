@@ -219,3 +219,18 @@ exports.deleteListing = asyncHandler(async (req, res) => {
   await query('DELETE FROM listings WHERE id = $1', [req.params.id]);
   res.json({ message: 'Listing deleted.' });
 });
+
+// PUT /api/listings/:id/mark-sold
+exports.markSold = async (req, res) => {
+  try {
+    const result = await query(
+      `UPDATE listings SET is_sold = TRUE, is_active = FALSE, sold_at = NOW() 
+       WHERE id = $1 AND seller_id = $2 RETURNING id`,
+      [req.params.id, req.user.id]
+    );
+    if (!result.rows.length) return res.status(404).json({ message: 'Listing not found or not yours.' });
+    res.json({ message: 'Marked as sold!' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

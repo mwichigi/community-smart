@@ -42,6 +42,7 @@ listingsRouter.get('/:id', optionalAuth, listingsController.getListing);
 listingsRouter.post('/', protect, upload.single('image'), listingsController.createListing);
 listingsRouter.put('/:id', protect, upload.single('image'), listingsController.updateListing);
 listingsRouter.delete('/:id', protect, listingsController.deleteListing);
+listingsRouter.put('/:id/mark-sold', protect, listingsController.markSold);
 
 // ── HOUSING ROUTES ────────────────────────────────────────────────────────────
 const housingRouter = express.Router();
@@ -84,6 +85,9 @@ adminRouter.delete('/listings/:id', adminController.deleteListing);
 adminRouter.put('/listings/:id/toggle', adminController.toggleListing);
 adminRouter.put('/users/:id/toggle', adminController.toggleUser);
 adminRouter.delete('/users/:id', adminController.deleteUser);
+adminRouter.get('/sold-listings', adminController.getSoldListings);
+adminRouter.put('/listings/:id/mark-sold', adminController.markSold);
+adminRouter.delete('/sold-listings', adminController.deleteSoldListings);
 
 // ── AI ROUTES ─────────────────────────────────────────────────────────────────
 const aiRouter = express.Router();

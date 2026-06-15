@@ -229,3 +229,4 @@ async function migrate() {
 
 migrate();
 
+// This won't work - need a separate alter script

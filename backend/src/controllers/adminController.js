@@ -127,3 +127,34 @@ exports.deleteUser = asyncHandler(async (req, res) => {
   await query('DELETE FROM users WHERE id = $1', [req.params.id]);
   res.json({ message: 'User deleted successfully.' });
 });
+
+// GET /api/admin/sold-listings
+exports.getSoldListings = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 15 } = req.query;
+  const offset = (page - 1) * limit;
+  const result = await query(`
+    SELECT l.*, u.name as seller_name, u.email as seller_email
+    FROM listings l
+    JOIN users u ON u.id = l.seller_id
+    WHERE l.is_sold = TRUE
+    ORDER BY l.sold_at DESC
+    LIMIT $1 OFFSET $2
+  `, [limit, offset]);
+  const total = await query(`SELECT COUNT(*) FROM listings WHERE is_sold = TRUE`);
+  res.json({ listings: result.rows, total: parseInt(total.rows[0].count) });
+});
+
+// PUT /api/admin/listings/:id/mark-sold
+exports.markSold = asyncHandler(async (req, res) => {
+  await query(
+    `UPDATE listings SET is_sold = TRUE, is_active = FALSE, sold_at = NOW() WHERE id = $1`,
+    [req.params.id]
+  );
+  res.json({ message: 'Listing marked as sold.' });
+});
+
+// DELETE /api/admin/sold-listings
+exports.deleteSoldListings = asyncHandler(async (req, res) => {
+  const result = await query(`DELETE FROM listings WHERE is_sold = TRUE`);
+  res.json({ message: `Deleted ${result.rowCount} sold listings.` });
+});
