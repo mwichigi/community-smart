@@ -15,7 +15,6 @@ import AIAssistant from './components/ai-assistant/AIAssistant';
 import Messages from './components/common/Messages';
 import ListingDetail from './pages/ListingDetail';
 import Admin from './pages/Admin';
-import Admin from './pages/Admin';
 
 function NotFound() {
   // Wake up Render backend on page load
