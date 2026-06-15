@@ -71,6 +71,10 @@ export default function Admin() {
     await api.delete('/admin/sold-listings');
     fetchSold();
   };
+  const markSold = async (id) => {
+    await api.put(`/admin/listings/${id}/mark-sold`);
+    fetchListings();
+  };
   const deleteListing = async (id) => {
     if (!window.confirm('Delete this listing?')) return;
     await api.delete(`/admin/listings/${id}`);
@@ -200,6 +204,7 @@ export default function Admin() {
                     <div><span style={{ background: l.is_active ? '#22543d' : '#742a2a', color: l.is_active ? '#68d391' : '#fc8181', padding: '3px 8px', borderRadius: 12, fontSize: 11, fontWeight: 600 }}>{l.is_active ? 'Active' : 'Hidden'}</span></div>
                     <div style={{ display: 'flex', gap: 6 }}>
                       <button onClick={() => toggleListing(l.id)} style={{ padding: '5px 10px', borderRadius: 6, border: 'none', background: '#2d3748', color: '#a0aec0', fontSize: 11, cursor: 'pointer' }}>{l.is_active ? '🙈 Hide' : '👁 Show'}</button>
+                      <button onClick={() => markSold(l.id)} style={{ padding: '5px 10px', borderRadius: 6, border: 'none', background: '#744210', color: '#f6ad55', fontSize: 11, cursor: 'pointer' }}>✅ Sold</button>
                       <button onClick={() => deleteListing(l.id)} style={{ padding: '5px 10px', borderRadius: 6, border: 'none', background: '#742a2a', color: '#fc8181', fontSize: 11, cursor: 'pointer' }}>🗑 Delete</button>
                     </div>
                   </div>
