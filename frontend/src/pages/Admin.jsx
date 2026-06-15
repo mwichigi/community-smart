@@ -82,18 +82,14 @@ export default function Admin() {
 
   return (
     <div style={{ paddingTop: 64, minHeight: '100vh', background: '#0f1117' }}>
-      {/* Header */}
       <div style={{ background: '#1a1d2e', borderBottom: '1px solid #2d3748', padding: '20px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           <h1 style={{ color: '#fff', fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 800 }}>🛡️ Admin Panel</h1>
           <p style={{ color: '#718096', fontSize: 13, marginTop: 2 }}>Community Smart — Nyandarua County</p>
         </div>
-        <div style={{ background: '#2d3748', padding: '8px 16px', borderRadius: 8, color: '#68d391', fontSize: 13, fontWeight: 600 }}>
-          🟢 Live
-        </div>
+        <div style={{ background: '#2d3748', padding: '8px 16px', borderRadius: 8, color: '#68d391', fontSize: 13, fontWeight: 600 }}>🟢 Live</div>
       </div>
 
-      {/* Tabs */}
       <div style={{ background: '#1a1d2e', borderBottom: '1px solid #2d3748', padding: '0 28px', display: 'flex', gap: 4 }}>
         {TABS.map(t => (
           <button key={t} onClick={() => { setTab(t); setPage(1); setSearch(''); }} style={{
@@ -105,11 +101,8 @@ export default function Admin() {
       </div>
 
       <div style={{ padding: '24px 28px', maxWidth: 1200, margin: '0 auto' }}>
-
-        {/* OVERVIEW TAB */}
         {tab === 'Overview' && stats && (
           <div>
-            {/* Stat cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 16, marginBottom: 28 }}>
               {[
                 { label: 'Total Users', value: stats.stats.totalUsers, icon: '👥', color: '#667eea' },
@@ -127,7 +120,6 @@ export default function Admin() {
               ))}
             </div>
 
-            {/* Category breakdown */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 28 }}>
               <div style={{ background: '#1a1d2e', borderRadius: 12, padding: 20, border: '1px solid #2d3748' }}>
                 <h3 style={{ color: '#fff', fontSize: 16, fontWeight: 700, marginBottom: 16 }}>📊 Listings by Category</h3>
@@ -138,8 +130,6 @@ export default function Admin() {
                   </div>
                 ))}
               </div>
-
-              {/* Recent registrations */}
               <div style={{ background: '#1a1d2e', borderRadius: 12, padding: 20, border: '1px solid #2d3748' }}>
                 <h3 style={{ color: '#fff', fontSize: 16, fontWeight: 700, marginBottom: 16 }}>🆕 Recent Registrations</h3>
                 {stats.recentUsers.map(u => (
@@ -154,13 +144,12 @@ export default function Admin() {
               </div>
             </div>
 
-            {/* Registrations per day */}
             <div style={{ background: '#1a1d2e', borderRadius: 12, padding: 20, border: '1px solid #2d3748' }}>
               <h3 style={{ color: '#fff', fontSize: 16, fontWeight: 700, marginBottom: 16 }}>📈 Registrations (Last 30 Days)</h3>
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 80 }}>
                 {stats.registrationsPerDay.map((d, i) => (
-                  <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                    <div style={{ width: '100%', background: '#68d391', borderRadius: '3px 3px 0 0', height: `${Math.max(4, d.count * 20)}px`, transition: 'height 0.3s' }} title={`${d.date}: ${d.count} users`} />
+                  <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <div style={{ width: '100%', background: '#68d391', borderRadius: '3px 3px 0 0', height: `${Math.max(4, d.count * 20)}px` }} title={`${d.date}: ${d.count} users`} />
                   </div>
                 ))}
               </div>
@@ -169,10 +158,8 @@ export default function Admin() {
           </div>
         )}
 
-        {/* LISTINGS TAB */}
         {tab === 'Listings' && (
           <div>
-            {/* Search + filter */}
             <div style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap' }}>
               <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="Search listings..." style={{ flex: 1, minWidth: 200, padding: '10px 14px', borderRadius: 8, border: '1px solid #2d3748', background: '#1a1d2e', color: '#fff', fontSize: 14 }} />
               <select value={category} onChange={e => { setCategory(e.target.value); setPage(1); }} style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #2d3748', background: '#1a1d2e', color: '#fff', fontSize: 14 }}>
@@ -182,8 +169,6 @@ export default function Admin() {
                 <option value="services">Services</option>
               </select>
             </div>
-
-            {/* Listings table */}
             <div style={{ background: '#1a1d2e', borderRadius: 12, border: '1px solid #2d3748', overflow: 'hidden' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr auto', padding: '12px 16px', borderBottom: '1px solid #2d3748', background: '#2d3748' }}>
                 {['Title', 'Seller', 'Price', 'Category', 'Status', 'Actions'].map(h => (
@@ -197,25 +182,15 @@ export default function Admin() {
                     <div style={{ color: '#a0aec0', fontSize: 12 }}>{l.seller_name}</div>
                     <div style={{ color: '#68d391', fontSize: 12 }}>{formatPrice(l.price)}</div>
                     <div style={{ color: '#a0aec0', fontSize: 12, textTransform: 'capitalize' }}>{l.category}</div>
-                    <div>
-                      <span style={{ background: l.is_active ? '#22543d' : '#742a2a', color: l.is_active ? '#68d391' : '#fc8181', padding: '3px 8px', borderRadius: 12, fontSize: 11, fontWeight: 600 }}>
-                        {l.is_active ? 'Active' : 'Hidden'}
-                      </span>
-                    </div>
+                    <div><span style={{ background: l.is_active ? '#22543d' : '#742a2a', color: l.is_active ? '#68d391' : '#fc8181', padding: '3px 8px', borderRadius: 12, fontSize: 11, fontWeight: 600 }}>{l.is_active ? 'Active' : 'Hidden'}</span></div>
                     <div style={{ display: 'flex', gap: 6 }}>
-                      <button onClick={() => toggleListing(l.id)} style={{ padding: '5px 10px', borderRadius: 6, border: 'none', background: '#2d3748', color: '#a0aec0', fontSize: 11, cursor: 'pointer' }}>
-                        {l.is_active ? '🙈 Hide' : '👁 Show'}
-                      </button>
-                      <button onClick={() => deleteListing(l.id)} style={{ padding: '5px 10px', borderRadius: 6, border: 'none', background: '#742a2a', color: '#fc8181', fontSize: 11, cursor: 'pointer' }}>
-                        🗑 Delete
-                      </button>
+                      <button onClick={() => toggleListing(l.id)} style={{ padding: '5px 10px', borderRadius: 6, border: 'none', background: '#2d3748', color: '#a0aec0', fontSize: 11, cursor: 'pointer' }}>{l.is_active ? '🙈 Hide' : '👁 Show'}</button>
+                      <button onClick={() => deleteListing(l.id)} style={{ padding: '5px 10px', borderRadius: 6, border: 'none', background: '#742a2a', color: '#fc8181', fontSize: 11, cursor: 'pointer' }}>🗑 Delete</button>
                     </div>
                   </div>
                 ))
               }
             </div>
-
-            {/* Pagination */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16 }}>
               <span style={{ color: '#718096', fontSize: 13 }}>{total} listings total</span>
               <div style={{ display: 'flex', gap: 8 }}>
@@ -227,11 +202,9 @@ export default function Admin() {
           </div>
         )}
 
-        {/* USERS TAB */}
         {tab === 'Users' && (
           <div>
             <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="Search users..." style={{ width: '100%', marginBottom: 20, padding: '10px 14px', borderRadius: 8, border: '1px solid #2d3748', background: '#1a1d2e', color: '#fff', fontSize: 14, boxSizing: 'border-box' }} />
-
             <div style={{ background: '#1a1d2e', borderRadius: 12, border: '1px solid #2d3748', overflow: 'hidden' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '2fr 2fr 1fr 1fr 1fr 1fr auto', padding: '12px 16px', borderBottom: '1px solid #2d3748', background: '#2d3748' }}>
                 {['Name', 'Email', 'Type', 'Listings', 'Messages', 'Joined', 'Actions'].map(h => (
@@ -248,18 +221,13 @@ export default function Admin() {
                     <div style={{ color: '#f6ad55', fontSize: 12 }}>{u.message_count}</div>
                     <div style={{ color: '#718096', fontSize: 11 }}>{formatDate(u.created_at)}</div>
                     <div style={{ display: 'flex', gap: 6 }}>
-                      <button onClick={() => toggleUser(u.id)} style={{ padding: '5px 10px', borderRadius: 6, border: 'none', background: '#2d3748', color: '#a0aec0', fontSize: 11, cursor: 'pointer' }}>
-                        {u.is_active ? '🔒 Ban' : '✅ Unban'}
-                      </button>
-                      <button onClick={() => deleteUser(u.id)} style={{ padding: '5px 10px', borderRadius: 6, border: 'none', background: '#742a2a', color: '#fc8181', fontSize: 11, cursor: 'pointer' }}>
-                        🗑
-                      </button>
+                      <button onClick={() => toggleUser(u.id)} style={{ padding: '5px 10px', borderRadius: 6, border: 'none', background: '#2d3748', color: '#a0aec0', fontSize: 11, cursor: 'pointer' }}>{u.is_active ? '🔒 Ban' : '✅ Unban'}</button>
+                      <button onClick={() => deleteUser(u.id)} style={{ padding: '5px 10px', borderRadius: 6, border: 'none', background: '#742a2a', color: '#fc8181', fontSize: 11, cursor: 'pointer' }}>🗑</button>
                     </div>
                   </div>
                 ))
               }
             </div>
-
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16 }}>
               <span style={{ color: '#718096', fontSize: 13 }}>{total} users total</span>
               <div style={{ display: 'flex', gap: 8 }}>
