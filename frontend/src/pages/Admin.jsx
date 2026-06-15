@@ -5,7 +5,7 @@ import api from '../utils/api';
 import { formatDate, formatPrice } from '../utils/helpers';
 import { Spinner } from '../components/common/UI';
 
-const TABS = ['Overview', 'Listings', 'Users'];
+const TABS = ['Overview', 'Listings', 'Sold', 'Users'];
 
 export default function Admin() {
   const { user } = useApp();
@@ -19,6 +19,7 @@ export default function Admin() {
   const [category, setCategory] = useState('');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [sold, setSold] = useState([]);
 
   useEffect(() => {
     if (!user) { navigate('/login'); return; }
@@ -29,6 +30,7 @@ export default function Admin() {
   useEffect(() => {
     if (tab === 'Listings') fetchListings();
     if (tab === 'Users') fetchUsers();
+    if (tab === 'Sold') fetchSold();
   }, [tab, search, page, category]);
 
   const fetchStats = async () => {
@@ -56,6 +58,19 @@ export default function Admin() {
     } catch { } finally { setLoading(false); }
   };
 
+  const fetchSold = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get('/admin/sold-listings', { params: { page, limit: 15 } });
+      setSold(res.listings || []);
+      setTotal(res.total || 0);
+    } catch { } finally { setLoading(false); }
+  };
+  const deleteSoldAll = async () => {
+    if (!window.confirm('Delete ALL sold listings permanently?')) return;
+    await api.delete('/admin/sold-listings');
+    fetchSold();
+  };
   const deleteListing = async (id) => {
     if (!window.confirm('Delete this listing?')) return;
     await api.delete(`/admin/listings/${id}`);
@@ -202,6 +217,42 @@ export default function Admin() {
           </div>
         )}
 
+
+        {tab === 'Sold' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <h3 style={{ color: '#fff', fontSize: 16, fontWeight: 700 }}>🏷️ Sold Listings ({total})</h3>
+              <button onClick={deleteSoldAll} style={{ padding: '10px 20px', borderRadius: 8, border: 'none', background: '#742a2a', color: '#fc8181', fontWeight: 700, cursor: 'pointer' }}>🗑 Delete All Sold</button>
+            </div>
+            <div style={{ background: '#1a1d2e', borderRadius: 12, border: '1px solid #2d3748', overflow: 'hidden' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr auto', padding: '12px 16px', borderBottom: '1px solid #2d3748', background: '#2d3748' }}>
+                {['Title', 'Seller', 'Price', 'Sold At', 'Actions'].map(h => (
+                  <div key={h} style={{ color: '#a0aec0', fontSize: 11, fontWeight: 700, textTransform: 'uppercase' }}>{h}</div>
+                ))}
+              </div>
+              {loading ? <div style={{ padding: 40, textAlign: 'center' }}><Spinner /></div> :
+                sold.length === 0 ? <div style={{ padding: 40, textAlign: 'center', color: '#718096' }}>No sold listings yet.</div> :
+                sold.map(l => (
+                  <div key={l.id} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr auto', padding: '12px 16px', borderBottom: '1px solid #2d3748', alignItems: 'center' }}>
+                    <div style={{ color: '#e2e8f0', fontSize: 13, fontWeight: 600 }}>{l.title}</div>
+                    <div style={{ color: '#a0aec0', fontSize: 12 }}>{l.seller_name}</div>
+                    <div style={{ color: '#68d391', fontSize: 12 }}>{formatPrice(l.price)}</div>
+                    <div style={{ color: '#718096', fontSize: 11 }}>{formatDate(l.sold_at)}</div>
+                    <button onClick={() => deleteListing(l.id)} style={{ padding: '5px 10px', borderRadius: 6, border: 'none', background: '#742a2a', color: '#fc8181', fontSize: 11, cursor: 'pointer' }}>🗑 Delete</button>
+                  </div>
+                ))
+              }
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16 }}>
+              <span style={{ color: '#718096', fontSize: 13 }}>{total} sold listings total</span>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#2d3748', color: '#a0aec0', cursor: 'pointer' }}>← Prev</button>
+                <span style={{ padding: '8px 16px', color: '#718096' }}>Page {page}</span>
+                <button onClick={() => setPage(p => p + 1)} disabled={page * 15 >= total} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#2d3748', color: '#a0aec0', cursor: 'pointer' }}>Next →</button>
+              </div>
+            </div>
+          </div>
+        )}
         {tab === 'Users' && (
           <div>
             <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="Search users..." style={{ width: '100%', marginBottom: 20, padding: '10px 14px', borderRadius: 8, border: '1px solid #2d3748', background: '#1a1d2e', color: '#fff', fontSize: 14, boxSizing: 'border-box' }} />
