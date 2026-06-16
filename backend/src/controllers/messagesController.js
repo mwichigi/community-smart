@@ -1,3 +1,5 @@
+const { log } = require('../utils/logger');
+const { log } = require('../utils/logger');
 const { query } = require('../config/db');
 const { asyncHandler } = require('../middleware/errorHandler');
 

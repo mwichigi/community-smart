@@ -1,3 +1,5 @@
+const { log } = require('../utils/logger');
+const { log } = require('../utils/logger');
 const { query } = require('../config/db');
 const { asyncHandler } = require('../middleware/errorHandler');
 const { uploadToCloudinary, deleteFromCloudinary } = require('../config/cloudinary');
@@ -229,7 +231,9 @@ exports.markSold = async (req, res) => {
       [req.params.id, req.user.id]
     );
     if (!result.rows.length) return res.status(404).json({ message: 'Listing not found or not yours.' });
-    res.json({ message: 'Marked as sold!' });
+    await log(req, 'mark_sold', 'listing', parseInt(req.params.id), 'Listing marked as sold');
+  await log(req, 'mark_sold', 'listing', parseInt(req.params.id), 'Listing marked as sold');
+  res.json({ message: 'Marked as sold!' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

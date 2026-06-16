@@ -158,3 +158,22 @@ exports.deleteSoldListings = asyncHandler(async (req, res) => {
   const result = await query(`DELETE FROM listings WHERE is_sold = TRUE`);
   res.json({ message: `Deleted ${result.rowCount} sold listings.` });
 });
+
+// GET /api/admin/logs
+exports.getLogs = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 50, action = '', user = '' } = req.query;
+  const offset = (page - 1) * limit;
+  const result = await query(`
+    SELECT * FROM activity_logs
+    WHERE ($1 = '' OR action = $1)
+    AND ($2 = '' OR user_name ILIKE $2 OR user_email ILIKE $2)
+    ORDER BY created_at DESC
+    LIMIT $3 OFFSET $4
+  `, [action, `%${user}%`, limit, offset]);
+  const total = await query(`
+    SELECT COUNT(*) FROM activity_logs
+    WHERE ($1 = '' OR action = $1)
+    AND ($2 = '' OR user_name ILIKE $2 OR user_email ILIKE $2)
+  `, [action, `%${user}%`]);
+  res.json({ logs: result.rows, total: parseInt(total.rows[0].count) });
+});

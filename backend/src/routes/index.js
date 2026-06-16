@@ -88,6 +88,7 @@ adminRouter.delete('/users/:id', adminController.deleteUser);
 adminRouter.get('/sold-listings', adminController.getSoldListings);
 adminRouter.put('/listings/:id/mark-sold', adminController.markSold);
 adminRouter.delete('/sold-listings', adminController.deleteSoldListings);
+adminRouter.get('/logs', adminController.getLogs);
 
 // ── AI ROUTES ─────────────────────────────────────────────────────────────────
 const aiRouter = express.Router();
