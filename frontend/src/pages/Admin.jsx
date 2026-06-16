@@ -5,7 +5,7 @@ import api from '../utils/api';
 import { formatDate, formatPrice } from '../utils/helpers';
 import { Spinner } from '../components/common/UI';
 
-const TABS = ['Overview', 'Listings', 'Sold', 'Users'];
+const TABS = ['Overview', 'Listings', 'Sold', 'Users', 'Logs'];
 
 export default function Admin() {
   const { user } = useApp();
@@ -20,6 +20,9 @@ export default function Admin() {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [sold, setSold] = useState([]);
+  const [logs, setLogs] = useState([]);
+  const [logAction, setLogAction] = useState('');
+  const [logUser, setLogUser] = useState('');
 
   useEffect(() => {
     if (!user) { navigate('/login'); return; }
@@ -31,6 +34,7 @@ export default function Admin() {
     if (tab === 'Listings') fetchListings();
     if (tab === 'Users') fetchUsers();
     if (tab === 'Sold') fetchSold();
+    if (tab === 'Logs') fetchLogs();
   }, [tab, search, page, category]);
 
   const fetchStats = async () => {
@@ -58,6 +62,14 @@ export default function Admin() {
     } catch { } finally { setLoading(false); }
   };
 
+  const fetchLogs = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get('/admin/logs', { params: { page, limit: 50, action: logAction, user: logUser } });
+      setLogs(res.logs || []);
+      setTotal(res.total || 0);
+    } catch { } finally { setLoading(false); }
+  };
   const fetchSold = async () => {
     setLoading(true);
     try {
@@ -290,6 +302,60 @@ export default function Admin() {
                 <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#2d3748', color: '#a0aec0', cursor: 'pointer' }}>← Prev</button>
                 <span style={{ padding: '8px 16px', color: '#718096' }}>Page {page}</span>
                 <button onClick={() => setPage(p => p + 1)} disabled={page * 15 >= total} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#2d3748', color: '#a0aec0', cursor: 'pointer' }}>Next →</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {tab === 'Logs' && (
+          <div>
+            <div style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap' }}>
+              <input value={logUser} onChange={e => { setLogUser(e.target.value); setPage(1); }} placeholder="Search by user..." style={{ flex: 1, minWidth: 200, padding: '10px 14px', borderRadius: 8, border: '1px solid #2d3748', background: '#1a1d2e', color: '#fff', fontSize: 14 }} />
+              <select value={logAction} onChange={e => { setLogAction(e.target.value); setPage(1); }} style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #2d3748', background: '#1a1d2e', color: '#fff', fontSize: 14 }}>
+                <option value="">All Actions</option>
+                <option value="login">Login</option>
+                <option value="register">Register</option>
+                <option value="create_listing">Create Listing</option>
+                <option value="update_listing">Update Listing</option>
+                <option value="delete_listing">Delete Listing</option>
+                <option value="mark_sold">Mark Sold</option>
+                <option value="send_message">Send Message</option>
+              </select>
+            </div>
+            <div style={{ background: '#1a1d2e', borderRadius: 12, border: '1px solid #2d3748', overflow: 'hidden' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 2fr 1fr', padding: '12px 16px', borderBottom: '1px solid #2d3748', background: '#2d3748' }}>
+                {['User', 'Action', 'Entity', 'Detail', 'Time'].map(h => (
+                  <div key={h} style={{ color: '#a0aec0', fontSize: 11, fontWeight: 700, textTransform: 'uppercase' }}>{h}</div>
+                ))}
+              </div>
+              {loading ? <div style={{ padding: 40, textAlign: 'center' }}><Spinner /></div> :
+                logs.length === 0 ? <div style={{ padding: 40, textAlign: 'center', color: '#718096' }}>No logs yet.</div> :
+                logs.map(l => {
+                  const actionColors = {
+                    login: '#68d391', register: '#76e4f7', create_listing: '#b794f4',
+                    update_listing: '#f6ad55', delete_listing: '#fc8181', mark_sold: '#f6ad55', send_message: '#667eea'
+                  };
+                  return (
+                    <div key={l.id} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 2fr 1fr', padding: '10px 16px', borderBottom: '1px solid #2d3748', alignItems: 'center' }}>
+                      <div>
+                        <div style={{ color: '#e2e8f0', fontSize: 12, fontWeight: 600 }}>{l.user_name || 'Guest'}</div>
+                        <div style={{ color: '#718096', fontSize: 10 }}>{l.ip}</div>
+                      </div>
+                      <div><span style={{ background: '#2d3748', color: actionColors[l.action] || '#a0aec0', padding: '3px 8px', borderRadius: 12, fontSize: 11, fontWeight: 600 }}>{l.action}</span></div>
+                      <div style={{ color: '#a0aec0', fontSize: 12 }}>{l.entity ? `${l.entity} #${l.entity_id}` : '—'}</div>
+                      <div style={{ color: '#718096', fontSize: 12 }}>{l.detail || '—'}</div>
+                      <div style={{ color: '#718096', fontSize: 11 }}>{formatDate(l.created_at)}</div>
+                    </div>
+                  );
+                })
+              }
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16 }}>
+              <span style={{ color: '#718096', fontSize: 13 }}>{total} log entries</span>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#2d3748', color: '#a0aec0', cursor: 'pointer' }}>← Prev</button>
+                <span style={{ padding: '8px 16px', color: '#718096' }}>Page {page}</span>
+                <button onClick={() => setPage(p => p + 1)} disabled={page * 50 >= total} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#2d3748', color: '#a0aec0', cursor: 'pointer' }}>Next →</button>
               </div>
             </div>
           </div>
