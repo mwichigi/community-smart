@@ -47,6 +47,7 @@ exports.register = asyncHandler(async (req, res) => {
     token,
     user: formatUser(user),
   });
+  await log(Object.assign(req, { user: formatUser(user) }), 'register', 'user', user.id, 'New user registered');
 });
 
 // POST /api/auth/login

@@ -231,7 +231,6 @@ exports.markSold = async (req, res) => {
     );
     if (!result.rows.length) return res.status(404).json({ message: 'Listing not found or not yours.' });
     await log(req, 'mark_sold', 'listing', parseInt(req.params.id), 'Listing marked as sold');
-  await log(req, 'mark_sold', 'listing', parseInt(req.params.id), 'Listing marked as sold');
   res.json({ message: 'Marked as sold!' });
   } catch (err) {
     res.status(500).json({ message: err.message });
