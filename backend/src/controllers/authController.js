@@ -71,6 +71,8 @@ exports.login = asyncHandler(async (req, res) => {
   await query('UPDATE users SET last_seen = NOW() WHERE id = $1', [user.id]);
 
   const token = signToken(user.id);
+  const userResponse = formatUser(user);
+  await log(Object.assign(req, { user: userResponse }), 'login', 'user', user.id, 'User logged in');
   res.json({
     message: `Welcome back, ${user.name}!`,
     token,
