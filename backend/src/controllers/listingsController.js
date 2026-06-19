@@ -159,6 +159,7 @@ exports.createListing = asyncHandler(async (req, res) => {
     available_from || null, available_until || null,
   ]);
 
+  await log(req, 'create_listing', 'listing', result.rows[0].id, result.rows[0].title);
   res.status(201).json({ message: 'Listing created successfully!', listing: result.rows[0] });
 });
 
