@@ -21,7 +21,6 @@ export default function Admin() {
   const [total, setTotal] = useState(0);
   const [logs, setLogs] = useState([]);
   const [sold, setSold] = useState([]);
-  const [logs, setLogs] = useState([]);
   const [logAction, setLogAction] = useState('');
   const [logUser, setLogUser] = useState('');
 
@@ -90,13 +89,6 @@ export default function Admin() {
     fetchListings();
   };
   const fetchLogs = async () => {
-    setLoading(true);
-    try {
-      const res = await api.get('/admin/logs', { params: { page, limit: 30 } });
-      setLogs(res.logs || []);
-      setTotal(res.total || 0);
-    } catch { } finally { setLoading(false); }
-  };
 
   const deleteListing = async (id) => {
     if (!window.confirm('Delete this listing?')) return;
