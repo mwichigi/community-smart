@@ -19,6 +19,7 @@ export default function Admin() {
   const [category, setCategory] = useState('');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [logs, setLogs] = useState([]);
   const [sold, setSold] = useState([]);
   const [logs, setLogs] = useState([]);
   const [logAction, setLogAction] = useState('');
@@ -33,6 +34,7 @@ export default function Admin() {
   useEffect(() => {
     if (tab === 'Listings') fetchListings();
     if (tab === 'Users') fetchUsers();
+    if (tab === 'Logs') fetchLogs();
     if (tab === 'Sold') fetchSold();
     if (tab === 'Logs') fetchLogs();
   }, [tab, search, page, category]);
@@ -87,6 +89,15 @@ export default function Admin() {
     await api.put(`/admin/listings/${id}/mark-sold`);
     fetchListings();
   };
+  const fetchLogs = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get('/admin/logs', { params: { page, limit: 30 } });
+      setLogs(res.logs || []);
+      setTotal(res.total || 0);
+    } catch { } finally { setLoading(false); }
+  };
+
   const deleteListing = async (id) => {
     if (!window.confirm('Delete this listing?')) return;
     await api.delete(`/admin/listings/${id}`);
@@ -356,6 +367,40 @@ export default function Admin() {
                 <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#2d3748', color: '#a0aec0', cursor: 'pointer' }}>← Prev</button>
                 <span style={{ padding: '8px 16px', color: '#718096' }}>Page {page}</span>
                 <button onClick={() => setPage(p => p + 1)} disabled={page * 50 >= total} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#2d3748', color: '#a0aec0', cursor: 'pointer' }}>Next →</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {tab === 'Logs' && (
+          <div>
+            <div style={{ background: '#1a1d2e', borderRadius: 12, border: '1px solid #2d3748', overflow: 'hidden' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 2fr 1fr', padding: '12px 16px', borderBottom: '1px solid #2d3748', background: '#2d3748' }}>
+                {['User', 'Action', 'Entity', 'Detail', 'Time'].map(h => (
+                  <div key={h} style={{ color: '#a0aec0', fontSize: 11, fontWeight: 700, textTransform: 'uppercase' }}>{h}</div>
+                ))}
+              </div>
+              {loading ? <div style={{ padding: 40, textAlign: 'center' }}><Spinner /></div> :
+                logs.map(l => (
+                  <div key={l.id} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 2fr 1fr', padding: '10px 16px', borderBottom: '1px solid #2d3748', alignItems: 'center' }}>
+                    <div>
+                      <div style={{ color: '#e2e8f0', fontSize: 12, fontWeight: 600 }}>{l.user_name || 'Guest'}</div>
+                      <div style={{ color: '#718096', fontSize: 10 }}>{l.user_email || l.ip}</div>
+                    </div>
+                    <div><span style={{ background: '#2d3748', color: '#68d391', padding: '2px 8px', borderRadius: 8, fontSize: 11, fontWeight: 600 }}>{l.action}</span></div>
+                    <div style={{ color: '#a0aec0', fontSize: 12, textTransform: 'capitalize' }}>{l.entity || '-'}</div>
+                    <div style={{ color: '#718096', fontSize: 11 }}>{l.detail || '-'}</div>
+                    <div style={{ color: '#718096', fontSize: 11 }}>{formatDate(l.created_at)}</div>
+                  </div>
+                ))
+              }
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16 }}>
+              <span style={{ color: '#718096', fontSize: 13 }}>{total} logs total</span>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#2d3748', color: '#a0aec0', cursor: 'pointer' }}>← Prev</button>
+                <span style={{ padding: '8px 16px', color: '#718096' }}>Page {page}</span>
+                <button onClick={() => setPage(p => p + 1)} disabled={page * 30 >= total} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#2d3748', color: '#a0aec0', cursor: 'pointer' }}>Next →</button>
               </div>
             </div>
           </div>
