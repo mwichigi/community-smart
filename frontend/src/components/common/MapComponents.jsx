@@ -42,6 +42,10 @@ export function MapPicker({ value, onChange, height = 300 }) {
 
   const locateMe = () => {
     setLocating(true);
+      alert('Geolocation is not supported by your browser');
+      setLocating(false);
+      return;
+    }
     navigator.geolocation.getCurrentPosition(pos => {
       const c = { lat: pos.coords.latitude.toFixed(6), lng: pos.coords.longitude.toFixed(6) };
       if (!leafletMap.current) { setLocating(false); return; }
@@ -55,7 +59,7 @@ export function MapPicker({ value, onChange, height = 300 }) {
       }
       setCoords(c); onChange && onChange(c);
       setLocating(false);
-    }, () => setLocating(false));
+    }, (err) => { alert('Could not get your location. Please click on the map instead.'); setLocating(false); }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
   };
 
   return (
