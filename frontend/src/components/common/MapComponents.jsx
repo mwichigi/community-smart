@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-
 const COMMUNITY = [-0.5, 36.5];
 
 export function MapPicker({ value, onChange, height = 300 }) {
@@ -17,7 +16,6 @@ export function MapPicker({ value, onChange, height = 300 }) {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
-
     if (coords) {
       markerRef.current = L.marker([coords.lat, coords.lng], { draggable: true }).addTo(map);
       markerRef.current.on('dragend', e => {
@@ -26,7 +24,6 @@ export function MapPicker({ value, onChange, height = 300 }) {
         setCoords(c); onChange && onChange(c);
       });
     }
-
     map.on('click', e => {
       const c = { lat: e.latlng.lat.toFixed(6), lng: e.latlng.lng.toFixed(6) };
       if (markerRef.current) {
@@ -36,30 +33,37 @@ export function MapPicker({ value, onChange, height = 300 }) {
       }
       setCoords(c); onChange && onChange(c);
     });
-
     leafletMap.current = map;
   }, []);
 
   const locateMe = () => {
     setLocating(true);
-      alert('Geolocation is not supported by your browser');
+    if (!navigator.geolocation) {
+      alert('Geolocation not supported. Please click on the map instead.');
       setLocating(false);
       return;
     }
-    navigator.geolocation.getCurrentPosition(pos => {
-      const c = { lat: pos.coords.latitude.toFixed(6), lng: pos.coords.longitude.toFixed(6) };
-      if (!leafletMap.current) { setLocating(false); return; }
-      const L = window.L;
-      if (!L) { setLocating(false); return; }
-      leafletMap.current.setView([c.lat, c.lng], 15);
-      if (markerRef.current) {
-        markerRef.current.setLatLng([c.lat, c.lng]);
-      } else {
-        markerRef.current = L.marker([c.lat, c.lng], { draggable: true }).addTo(leafletMap.current);
-      }
-      setCoords(c); onChange && onChange(c);
-      setLocating(false);
-    }, (err) => { alert('Could not get your location. Please click on the map instead.'); setLocating(false); }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const c = { lat: pos.coords.latitude.toFixed(6), lng: pos.coords.longitude.toFixed(6) };
+        if (!leafletMap.current) { setLocating(false); return; }
+        const L = window.L;
+        if (!L) { setLocating(false); return; }
+        leafletMap.current.setView([c.lat, c.lng], 16);
+        if (markerRef.current) {
+          markerRef.current.setLatLng([c.lat, c.lng]);
+        } else {
+          markerRef.current = L.marker([c.lat, c.lng], { draggable: true }).addTo(leafletMap.current);
+        }
+        setCoords(c); onChange && onChange(c);
+        setLocating(false);
+      },
+      err => {
+        alert('Could not get your location. Please click on the map to pin your location instead.');
+        setLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
   };
 
   return (
@@ -95,7 +99,6 @@ export function MapView({ listings, height = 400, center }) {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap'
     }).addTo(map);
-
     listings?.forEach(item => {
       if (!item.location_lat || !item.location_lng) return;
       const icon = L.divIcon({
@@ -106,7 +109,6 @@ export function MapView({ listings, height = 400, center }) {
       L.marker([item.location_lat, item.location_lng], { icon }).addTo(map)
         .bindPopup(`<b>${item.title}</b><br>${item.price ? 'KES ' + item.price : 'Negotiable'}<br><small>${item.seller_name || ''}</small>`);
     });
-
     leafletMap.current = map;
   }, [listings]);
 
