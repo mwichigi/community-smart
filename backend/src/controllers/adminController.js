@@ -177,3 +177,16 @@ exports.getLogs = asyncHandler(async (req, res) => {
   `, [action, `%${user}%`]);
   res.json({ logs: result.rows, total: parseInt(total.rows[0].count) });
 });
+
+// GET /api/admin/logs
+exports.getLogs = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 30 } = req.query;
+  const offset = (page - 1) * limit;
+  const result = await query(`
+    SELECT * FROM activity_logs
+    ORDER BY created_at DESC
+    LIMIT $1 OFFSET $2
+  `, [limit, offset]);
+  const total = await query('SELECT COUNT(*) FROM activity_logs');
+  res.json({ logs: result.rows, total: parseInt(total.rows[0].count) });
+});

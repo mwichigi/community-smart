@@ -85,6 +85,7 @@ adminRouter.delete('/listings/:id', adminController.deleteListing);
 adminRouter.put('/listings/:id/toggle', adminController.toggleListing);
 adminRouter.put('/users/:id/toggle', adminController.toggleUser);
 adminRouter.delete('/users/:id', adminController.deleteUser);
+adminRouter.get('/logs', adminController.getLogs);
 adminRouter.get('/sold-listings', adminController.getSoldListings);
 adminRouter.put('/listings/:id/mark-sold', adminController.markSold);
 adminRouter.delete('/sold-listings', adminController.deleteSoldListings);
