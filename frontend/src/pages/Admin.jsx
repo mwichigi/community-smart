@@ -5,7 +5,7 @@ import api from '../utils/api';
 import { formatDate, formatPrice } from '../utils/helpers';
 import { Spinner } from '../components/common/UI';
 
-const TABS = ['Overview', 'Listings', 'Sold', 'Users', 'Logs'];
+const TABS = ['Overview', 'Listings', 'Users', 'Logs'];
 
 export default function Admin() {
   const { user } = useApp();
@@ -14,15 +14,12 @@ export default function Admin() {
   const [stats, setStats] = useState(null);
   const [listings, setListings] = useState([]);
   const [users, setUsers] = useState([]);
+  const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const [logs, setLogs] = useState([]);
-  const [sold, setSold] = useState([]);
-  const [logAction, setLogAction] = useState('');
-  const [logUser, setLogUser] = useState('');
 
   useEffect(() => {
     if (!user) { navigate('/login'); return; }
@@ -33,8 +30,6 @@ export default function Admin() {
   useEffect(() => {
     if (tab === 'Listings') fetchListings();
     if (tab === 'Users') fetchUsers();
-    if (tab === 'Logs') fetchLogs();
-    if (tab === 'Sold') fetchSold();
     if (tab === 'Logs') fetchLogs();
   }, [tab, search, page, category]);
 
@@ -66,29 +61,11 @@ export default function Admin() {
   const fetchLogs = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/admin/logs', { params: { page, limit: 50, action: logAction, user: logUser } });
+      const res = await api.get('/admin/logs', { params: { page, limit: 30 } });
       setLogs(res.logs || []);
       setTotal(res.total || 0);
     } catch { } finally { setLoading(false); }
   };
-  const fetchSold = async () => {
-    setLoading(true);
-    try {
-      const res = await api.get('/admin/sold-listings', { params: { page, limit: 15 } });
-      setSold(res.listings || []);
-      setTotal(res.total || 0);
-    } catch { } finally { setLoading(false); }
-  };
-  const deleteSoldAll = async () => {
-    if (!window.confirm('Delete ALL sold listings permanently?')) return;
-    await api.delete('/admin/sold-listings');
-    fetchSold();
-  };
-  const markSold = async (id) => {
-    await api.put(`/admin/listings/${id}/mark-sold`);
-    fetchListings();
-  };
-  const fetchLogs = async () => {
 
   const deleteListing = async (id) => {
     if (!window.confirm('Delete this listing?')) return;
@@ -135,6 +112,7 @@ export default function Admin() {
       </div>
 
       <div style={{ padding: '24px 28px', maxWidth: 1200, margin: '0 auto' }}>
+
         {tab === 'Overview' && stats && (
           <div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 16, marginBottom: 28 }}>
@@ -219,7 +197,6 @@ export default function Admin() {
                     <div><span style={{ background: l.is_active ? '#22543d' : '#742a2a', color: l.is_active ? '#68d391' : '#fc8181', padding: '3px 8px', borderRadius: 12, fontSize: 11, fontWeight: 600 }}>{l.is_active ? 'Active' : 'Hidden'}</span></div>
                     <div style={{ display: 'flex', gap: 6 }}>
                       <button onClick={() => toggleListing(l.id)} style={{ padding: '5px 10px', borderRadius: 6, border: 'none', background: '#2d3748', color: '#a0aec0', fontSize: 11, cursor: 'pointer' }}>{l.is_active ? '🙈 Hide' : '👁 Show'}</button>
-                      <button onClick={() => markSold(l.id)} style={{ padding: '5px 10px', borderRadius: 6, border: 'none', background: '#744210', color: '#f6ad55', fontSize: 11, cursor: 'pointer' }}>✅ Sold</button>
                       <button onClick={() => deleteListing(l.id)} style={{ padding: '5px 10px', borderRadius: 6, border: 'none', background: '#742a2a', color: '#fc8181', fontSize: 11, cursor: 'pointer' }}>🗑 Delete</button>
                     </div>
                   </div>
@@ -237,42 +214,6 @@ export default function Admin() {
           </div>
         )}
 
-
-        {tab === 'Sold' && (
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <h3 style={{ color: '#fff', fontSize: 16, fontWeight: 700 }}>🏷️ Sold Listings ({total})</h3>
-              <button onClick={deleteSoldAll} style={{ padding: '10px 20px', borderRadius: 8, border: 'none', background: '#742a2a', color: '#fc8181', fontWeight: 700, cursor: 'pointer' }}>🗑 Delete All Sold</button>
-            </div>
-            <div style={{ background: '#1a1d2e', borderRadius: 12, border: '1px solid #2d3748', overflow: 'hidden' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr auto', padding: '12px 16px', borderBottom: '1px solid #2d3748', background: '#2d3748' }}>
-                {['Title', 'Seller', 'Price', 'Sold At', 'Actions'].map(h => (
-                  <div key={h} style={{ color: '#a0aec0', fontSize: 11, fontWeight: 700, textTransform: 'uppercase' }}>{h}</div>
-                ))}
-              </div>
-              {loading ? <div style={{ padding: 40, textAlign: 'center' }}><Spinner /></div> :
-                sold.length === 0 ? <div style={{ padding: 40, textAlign: 'center', color: '#718096' }}>No sold listings yet.</div> :
-                sold.map(l => (
-                  <div key={l.id} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr auto', padding: '12px 16px', borderBottom: '1px solid #2d3748', alignItems: 'center' }}>
-                    <div style={{ color: '#e2e8f0', fontSize: 13, fontWeight: 600 }}>{l.title}</div>
-                    <div style={{ color: '#a0aec0', fontSize: 12 }}>{l.seller_name}</div>
-                    <div style={{ color: '#68d391', fontSize: 12 }}>{formatPrice(l.price)}</div>
-                    <div style={{ color: '#718096', fontSize: 11 }}>{formatDate(l.sold_at)}</div>
-                    <button onClick={() => deleteListing(l.id)} style={{ padding: '5px 10px', borderRadius: 6, border: 'none', background: '#742a2a', color: '#fc8181', fontSize: 11, cursor: 'pointer' }}>🗑 Delete</button>
-                  </div>
-                ))
-              }
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16 }}>
-              <span style={{ color: '#718096', fontSize: 13 }}>{total} sold listings total</span>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#2d3748', color: '#a0aec0', cursor: 'pointer' }}>← Prev</button>
-                <span style={{ padding: '8px 16px', color: '#718096' }}>Page {page}</span>
-                <button onClick={() => setPage(p => p + 1)} disabled={page * 15 >= total} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#2d3748', color: '#a0aec0', cursor: 'pointer' }}>Next →</button>
-              </div>
-            </div>
-          </div>
-        )}
         {tab === 'Users' && (
           <div>
             <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="Search users..." style={{ width: '100%', marginBottom: 20, padding: '10px 14px', borderRadius: 8, border: '1px solid #2d3748', background: '#1a1d2e', color: '#fff', fontSize: 14, boxSizing: 'border-box' }} />
@@ -312,19 +253,6 @@ export default function Admin() {
 
         {tab === 'Logs' && (
           <div>
-            <div style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap' }}>
-              <input value={logUser} onChange={e => { setLogUser(e.target.value); setPage(1); }} placeholder="Search by user..." style={{ flex: 1, minWidth: 200, padding: '10px 14px', borderRadius: 8, border: '1px solid #2d3748', background: '#1a1d2e', color: '#fff', fontSize: 14 }} />
-              <select value={logAction} onChange={e => { setLogAction(e.target.value); setPage(1); }} style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #2d3748', background: '#1a1d2e', color: '#fff', fontSize: 14 }}>
-                <option value="">All Actions</option>
-                <option value="login">Login</option>
-                <option value="register">Register</option>
-                <option value="create_listing">Create Listing</option>
-                <option value="update_listing">Update Listing</option>
-                <option value="delete_listing">Delete Listing</option>
-                <option value="mark_sold">Mark Sold</option>
-                <option value="send_message">Send Message</option>
-              </select>
-            </div>
             <div style={{ background: '#1a1d2e', borderRadius: 12, border: '1px solid #2d3748', overflow: 'hidden' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 2fr 1fr', padding: '12px 16px', borderBottom: '1px solid #2d3748', background: '#2d3748' }}>
                 {['User', 'Action', 'Entity', 'Detail', 'Time'].map(h => (
@@ -332,47 +260,9 @@ export default function Admin() {
                 ))}
               </div>
               {loading ? <div style={{ padding: 40, textAlign: 'center' }}><Spinner /></div> :
-                logs.length === 0 ? <div style={{ padding: 40, textAlign: 'center', color: '#718096' }}>No logs yet.</div> :
-                logs.map(l => {
-                  const actionColors = {
-                    login: '#68d391', register: '#76e4f7', create_listing: '#b794f4',
-                    update_listing: '#f6ad55', delete_listing: '#fc8181', mark_sold: '#f6ad55', send_message: '#667eea'
-                  };
-                  return (
-                    <div key={l.id} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 2fr 1fr', padding: '10px 16px', borderBottom: '1px solid #2d3748', alignItems: 'center' }}>
-                      <div>
-                        <div style={{ color: '#e2e8f0', fontSize: 12, fontWeight: 600 }}>{l.user_name || 'Guest'}</div>
-                        <div style={{ color: '#718096', fontSize: 10 }}>{l.ip}</div>
-                      </div>
-                      <div><span style={{ background: '#2d3748', color: actionColors[l.action] || '#a0aec0', padding: '3px 8px', borderRadius: 12, fontSize: 11, fontWeight: 600 }}>{l.action}</span></div>
-                      <div style={{ color: '#a0aec0', fontSize: 12 }}>{l.entity ? `${l.entity} #${l.entity_id}` : '—'}</div>
-                      <div style={{ color: '#718096', fontSize: 12 }}>{l.detail || '—'}</div>
-                      <div style={{ color: '#718096', fontSize: 11 }}>{formatDate(l.created_at)}</div>
-                    </div>
-                  );
-                })
-              }
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16 }}>
-              <span style={{ color: '#718096', fontSize: 13 }}>{total} log entries</span>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#2d3748', color: '#a0aec0', cursor: 'pointer' }}>← Prev</button>
-                <span style={{ padding: '8px 16px', color: '#718096' }}>Page {page}</span>
-                <button onClick={() => setPage(p => p + 1)} disabled={page * 50 >= total} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#2d3748', color: '#a0aec0', cursor: 'pointer' }}>Next →</button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {tab === 'Logs' && (
-          <div>
-            <div style={{ background: '#1a1d2e', borderRadius: 12, border: '1px solid #2d3748', overflow: 'hidden' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 2fr 1fr', padding: '12px 16px', borderBottom: '1px solid #2d3748', background: '#2d3748' }}>
-                {['User', 'Action', 'Entity', 'Detail', 'Time'].map(h => (
-                  <div key={h} style={{ color: '#a0aec0', fontSize: 11, fontWeight: 700, textTransform: 'uppercase' }}>{h}</div>
-                ))}
-              </div>
-              {loading ? <div style={{ padding: 40, textAlign: 'center' }}><Spinner /></div> :
+                logs.length === 0 ? (
+                  <div style={{ padding: 40, textAlign: 'center', color: '#718096' }}>No activity logs yet</div>
+                ) :
                 logs.map(l => (
                   <div key={l.id} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 2fr 1fr', padding: '10px 16px', borderBottom: '1px solid #2d3748', alignItems: 'center' }}>
                     <div>
@@ -397,8 +287,8 @@ export default function Admin() {
             </div>
           </div>
         )}
+
       </div>
     </div>
   );
 }
- 
