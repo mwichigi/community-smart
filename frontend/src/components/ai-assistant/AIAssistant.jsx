@@ -178,7 +178,7 @@ export default function AIAssistant() {
                   </div>
                 )}
               </div>
-              <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={handleImageSelect} style={{ display: 'none' }} />
+              <input ref={fileRef} type="file" accept="image/*" onChange={handleImageSelect} style={{ display: 'none' }} />
               {!imagePreview && (
                 <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>
                   <button type="button" onClick={() => fileRef.current?.click()} style={{

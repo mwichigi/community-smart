@@ -15,6 +15,8 @@ import AIAssistant from './components/ai-assistant/AIAssistant';
 import Messages from './components/common/Messages';
 import ListingDetail from './pages/ListingDetail';
 import Admin from './pages/Admin';
+import Profile from './pages/Profile';
+import MyListings from './pages/MyListings';
 
 function NotFound() {
   // Wake up Render backend on page load
@@ -58,6 +60,8 @@ export default function App() {
           <Route path="/ai-assistant" element={<AIAssistant />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/my-listings" element={<MyListings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

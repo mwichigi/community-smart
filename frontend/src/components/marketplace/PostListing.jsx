@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
-import { listingsAPI, uploadAPI } from '../../utils/api';
+import { listingsAPI, housingAPI, uploadAPI } from '../../utils/api';
 import { Button, Input, Select, Textarea } from '../common/UI';
 import { MapPicker } from '../common/MapComponents';
 import { CATEGORIES, UNIT_OPTIONS } from '../../utils/helpers';
@@ -10,6 +10,7 @@ const LISTING_TYPES = [
   { value: 'produce', label: '🌽 Farm Produce', desc: 'Eggs, milk, potatoes, maize, beans...' },
   { value: 'agrovet', label: '🌿 Agrovet Supplies', desc: 'Fertilizers, feeds, pesticides, seeds...' },
   { value: 'services', label: '🔧 Service', desc: 'Vet, transport, tractor hire, labour...' },
+  { value: 'housing', label: '🏠 Housing & Rentals', desc: 'Single room, bedsitter, 1-3 bedrooms, shop...' },
 ];
 
 export default function PostListing() {
@@ -62,9 +63,15 @@ export default function PostListing() {
     if (Object.keys(errs).length) { setErrors(errs); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
     setLoading(true);
     try {
-      await listingsAPI.create({ ...form, category: form.type });
-      setSuccess(true);
-      setTimeout(() => navigate('/marketplace'), 2500);
+      if (form.type === 'housing') {
+        await housingAPI.create({ ...form, type: form.subcategory || 'Single Room' });
+        setSuccess(true);
+        setTimeout(() => navigate('/housing'), 2500);
+      } else {
+        await listingsAPI.create({ ...form, category: form.type });
+        setSuccess(true);
+        setTimeout(() => navigate('/marketplace'), 2500);
+      }
     } catch (err) {
       setErrors({ server: err.message });
     } finally { setLoading(false); }

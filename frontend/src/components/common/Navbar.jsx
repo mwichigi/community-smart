@@ -53,6 +53,9 @@ export default function Navbar() {
 
         {/* Desktop nav links */}
         <div style={{ display: 'flex', gap: 4, marginLeft: 32, flex: 1 }} className="nav-links-desktop">
+          {user?.email === 'ngangamj828@gmail.com' && (
+            <a href='/admin' style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 0', color: '#68d391', fontSize: 15, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>🛡️ Admin Panel</a>
+          )}
           {navLinks.map(link => (
             <Link key={link.to} to={link.to} style={{
               display: 'flex', alignItems: 'center', gap: 6,
@@ -150,6 +153,9 @@ export default function Navbar() {
           background: 'rgba(10,45,22,0.98)', padding: '12px 20px 20px',
           borderTop: '1px solid rgba(76,175,114,0.2)',
         }}>
+          {user?.email === 'ngangamj828@gmail.com' && (
+            <a href='/admin' style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 0', color: '#68d391', fontSize: 15, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>🛡️ Admin Panel</a>
+          )}
           {navLinks.map(link => (
             <Link key={link.to} to={link.to} style={{
               display: 'flex', alignItems: 'center', gap: 10,

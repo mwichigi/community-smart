@@ -62,7 +62,7 @@ export default function Housing() {
   useEffect(() => {
     housingAPI.getAll({ type: typeFilter, max_price: maxRent })
       .then(res => setHouses(res.houses || res))
-      .catch(() => setHouses(DEMO_HOUSES))
+      .catch(() => setHouses([]))
       .finally(() => setLoading(false));
   }, [typeFilter, maxRent]);
 
